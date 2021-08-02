@@ -34,7 +34,9 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Aluno matriculado com sucesso", Toast.LENGTH_LONG).show()
 
             //Criar um adaptador para mostrar a lista de alunos matriculados
-            val turmaAdapter = TurmaAdapter(turmaUm.getAlunosMatriculados())
+            val turmaAdapter = TurmaAdapter(turmaUm.getAlunosMatriculados()) { nome, documento ->
+                Toast.makeText(this, "Clicou na linha: " + nome + " / " + documento, Toast.LENGTH_LONG).show()
+            }
             //Definir que tipo de disposição de itens vai ser utilizado
             recyclerViewListaAlunos.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             //Passar para o recyclerview qual o adaptador vai ser utilizado, ou seja, o criado anteriormente (instanciado)
