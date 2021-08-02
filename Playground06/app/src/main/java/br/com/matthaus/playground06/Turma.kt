@@ -32,6 +32,11 @@ class Turma(
         }
     }
 
+    fun desmatricularAluno(posicao: Int) : Boolean {
+        alunosMatriculados.removeAt(posicao)
+        return true
+    }
+
     fun getAlunosMatriculados() : List<Pair<String, String>> {
         return alunosMatriculados
     }

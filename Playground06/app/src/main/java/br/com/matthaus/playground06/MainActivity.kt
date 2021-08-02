@@ -31,20 +31,36 @@ class MainActivity : AppCompatActivity() {
         val matriculadoSucesso = turmaUm.matricularAluno(nome, documento)
 
         if (matriculadoSucesso) {
-            Toast.makeText(this, "Aluno matriculado com sucesso", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Aluno matriculado com sucesso", Toast.LENGTH_SHORT).show()
 
             //Criar um adaptador para mostrar a lista de alunos matriculados
-            val turmaAdapter = TurmaAdapter(turmaUm.getAlunosMatriculados()) { nome, documento ->
-                Toast.makeText(this, "Clicou na linha: " + nome + " / " + documento, Toast.LENGTH_LONG).show()
+            val turmaAdapter = TurmaAdapter(turmaUm.getAlunosMatriculados()) { nome, documento, posicao ->
+                executarDesmatricular(nome, documento, posicao, recyclerViewListaAlunos)
             }
             //Definir que tipo de disposição de itens vai ser utilizado
             recyclerViewListaAlunos.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             //Passar para o recyclerview qual o adaptador vai ser utilizado, ou seja, o criado anteriormente (instanciado)
             recyclerViewListaAlunos.adapter = turmaAdapter
         } else {
-            Toast.makeText(this, "Erro ao matricular aluno", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Erro ao matricular aluno", Toast.LENGTH_SHORT).show()
         }
 
+    }
+
+    fun executarDesmatricular(nome: String, documento: String, posicao: Int, recyclerViewListaAlunos: RecyclerView) {
+        val sucesso = turmaUm.desmatricularAluno(posicao)
+        if (sucesso) {
+            Toast.makeText(this, "Desmatricula com sucesso: " + nome + " / " + documento + " / " + posicao.toString(), Toast.LENGTH_SHORT).show()
+
+            val turmaAdapter = TurmaAdapter(turmaUm.getAlunosMatriculados()) { nome, documento, posicao ->
+                executarDesmatricular(nome, documento, posicao, recyclerViewListaAlunos)
+            }
+
+            recyclerViewListaAlunos.adapter = turmaAdapter
+
+        } else {
+            Toast.makeText(this, "Desmatricula não realizada", Toast.LENGTH_SHORT).show()
+        }
     }
 
 }
