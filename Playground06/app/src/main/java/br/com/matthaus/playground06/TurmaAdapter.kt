@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 //Adapter para determinar as regras para montagem da lista
 //ViewHolder para representar cada uma das linhas da lista
 
-class TurmaAdapter(val listaAlunos : List<Pair<String, String>>, val onDesmatricular: (String, String, Int) -> Unit) : RecyclerView.Adapter<TurmaAdapter.AlunoViewHolder>() {
+class TurmaAdapter(var listaAlunos : List<Pair<String, String>>, val onDesmatricular: (String, String, Int) -> Unit) : RecyclerView.Adapter<TurmaAdapter.AlunoViewHolder>() {
 
     //Esta função é chamada para construir o ViewHolder e atribuir o layout correto
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlunoViewHolder {
@@ -32,6 +32,14 @@ class TurmaAdapter(val listaAlunos : List<Pair<String, String>>, val onDesmatric
     //Ela é chamada uma vez no início do RecyclerView e a cada vez que ele é atualizado
     override fun getItemCount(): Int {
         return listaAlunos.size
+    }
+
+    fun atualizaAlunosTurma(listaAlunosAtualizada: List<Pair<String, String>>) {
+        listaAlunos = listaAlunosAtualizada
+        //Sempre que mudamos a lista de dados de um adapter, temos que avisar o adaptador
+        //Usamos a função notifyDataSetChanged() para isto
+        //Por trás, isto iniciará a re-criação das linhas no recyclerview
+        notifyDataSetChanged()
     }
 
     class AlunoViewHolder(itemView: View, val onClickDesmatricular: (String, String, Int) -> Unit) : RecyclerView.ViewHolder(itemView) {

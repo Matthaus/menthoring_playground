@@ -9,60 +9,78 @@ import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
 
-    val turmaUm = Turma("Android", "15:00", 5)
+    private var turma : Turma = Turma("Android", "15:00", 10)
 
-    var recyclerViewListaAlunos: RecyclerView? = null
-    var adapterListaAlunos: TurmaAdapter? = null
+    private var btnMatricular : Button? = null
+    private var rvListaAlunos : RecyclerView? = null
+    private var adaptadorListaAlunos : TurmaAdapter? = null
 
+    //onCreate é executado quando a tela é criada (ela é chamada pelo Android)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val buttonMatricular = findViewById<Button>(R.id.button_matricular)
-        recyclerViewListaAlunos = findViewById<RecyclerView>(R.id.rv_lista_alunos)
+        //Buscamos a referência de cada componente na tela (View).
+        btnMatricular = findViewById(R.id.button_matricular)
+        rvListaAlunos = findViewById(R.id.rv_lista_alunos)
 
-        buttonMatricular.setOnClickListener {
-            executarMatricula()
+        //Configuramos o comportamento de cada um desses componentes
+        configurarBotaoMatricular()
+        configurarListaAlunos()
+    }
+
+    //É interessante que uma função tenha responsabilidade única
+    //Funções que determinam o comportamento da tela devem ser privadas, até que seja que necessário
+    //o contrário. Então, por padrão, declarar como private :)
+    private fun configurarBotaoMatricular() {
+        btnMatricular?.setOnClickListener {
+            val nome = "Matthaus"
+            val documento = "MG123456"
+            executarMatricula(nome, documento)
         }
     }
 
-    fun configurarAdapter(listaAlunos: List<Pair<String, String>>) {
-        //Criar um adaptador para mostrar a lista de alunos matriculados
-        adapterListaAlunos = TurmaAdapter(listaAlunos) { nome, documento, posicao ->
-            executarDesmatricular(nome, documento, posicao)
-        }
-        recyclerViewListaAlunos?.let {
-            //Definir que tipo de disposição de itens vai ser utilizado
-            it.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-            //Passar para o recyclerview qual o adaptador vai ser utilizado, ou seja, o criado anteriormente (instanciado)
-            it.adapter = adapterListaAlunos
-        }
+    private fun configurarListaAlunos() {
+
+        //Instanciando TurmaAdapter usando "named arguments"
+        adaptadorListaAlunos = TurmaAdapter(
+            listaAlunos = emptyList(),
+            onDesmatricular = { nome, documento, posicao ->
+                executarDesmatricula(nome, documento, posicao)
+            }
+        )
+
+        rvListaAlunos?.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        rvListaAlunos?.adapter = adaptadorListaAlunos
     }
 
-    fun executarMatricula() {
-        //Buscar o nome e o documento digitado
-        val nome = "Matthaus"
-        val documento = "MG123456"
-
-        val matriculadoSucesso = turmaUm.matricularAluno(nome, documento)
-
-        if (matriculadoSucesso) {
+    private fun executarMatricula(nome: String, documento: String) {
+        val sucessoMatricula = turma.matricularAluno(nome, documento)
+        if (sucessoMatricula) {
+            //Mostrar uma mensagem de sucesso
             Toast.makeText(this, "Aluno matriculado com sucesso", Toast.LENGTH_SHORT).show()
-            configurarAdapter(turmaUm.getAlunosMatriculados())
         } else {
             Toast.makeText(this, "Erro ao matricular aluno", Toast.LENGTH_SHORT).show()
         }
-
+        atualizarListaAlunos()
     }
 
-    fun executarDesmatricular(nome: String, documento: String, posicao: Int) {
-        val sucesso = turmaUm.desmatricularAluno(posicao)
-        if (sucesso) {
-            Toast.makeText(this, "Desmatricula com sucesso: " + nome + " / " + documento + " / " + posicao.toString(), Toast.LENGTH_SHORT).show()
-            configurarAdapter(turmaUm.getAlunosMatriculados())
+    private fun executarDesmatricula(nome: String, documento: String, posicao: Int) {
+        val sucessoDesmatricula = turma.desmatricularAluno(posicao)
+        if (sucessoDesmatricula) {
+            Toast.makeText(this, "Aluno desmatriculado com sucesso", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "Desmatricula não realizada", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Erro ao desmatricular aluno", Toast.LENGTH_SHORT).show()
         }
+        atualizarListaAlunos()
+    }
+
+    private fun atualizarListaAlunos() {
+        //Busca a lista de alunos atualizada da turma
+        val lista_alunos_turma = turma.getAlunosMatriculados()
+        //Passamos a lista atualizada de alunos para o adaptador através da sua função
+        //atualizarListaAlunos()
+        adaptadorListaAlunos?.atualizaAlunosTurma(lista_alunos_turma)
     }
 
 }
