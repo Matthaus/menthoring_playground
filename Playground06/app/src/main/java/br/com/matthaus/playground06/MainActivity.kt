@@ -3,9 +3,12 @@ package br.com.matthaus.playground06
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,6 +17,8 @@ class MainActivity : AppCompatActivity() {
     private var btnMatricular : Button? = null
     private var rvListaAlunos : RecyclerView? = null
     private var adaptadorListaAlunos : TurmaAdapter? = null
+    private var imgTopo : ImageView? = null
+    private var tvAlunosMatriculados : TextView? = null
 
     //onCreate é executado quando a tela é criada (ela é chamada pelo Android)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,10 +28,13 @@ class MainActivity : AppCompatActivity() {
         //Buscamos a referência de cada componente na tela (View).
         btnMatricular = findViewById(R.id.button_matricular)
         rvListaAlunos = findViewById(R.id.rv_lista_alunos)
+        imgTopo = findViewById(R.id.imagem_topo)
+        tvAlunosMatriculados = findViewById(R.id.quantidade_alunos_matriculados)
 
         //Configuramos o comportamento de cada um desses componentes
         configurarBotaoMatricular()
         configurarListaAlunos()
+        configurarImageTopo()
     }
 
     //É interessante que uma função tenha responsabilidade única
@@ -54,6 +62,12 @@ class MainActivity : AppCompatActivity() {
         rvListaAlunos?.adapter = adaptadorListaAlunos
     }
 
+    private fun configurarImageTopo() {
+        imgTopo?.let {
+            Glide.with(this).load("https://wakke.co/wp-content/uploads/2018/05/escolaweb-capas-artigos-2-retencao-de-alunos-o-que-e-e-como-fazer-1.jpg").into(it)
+        }
+    }
+
     private fun executarMatricula(nome: String, documento: String) {
         val sucessoMatricula = turma.matricularAluno(nome, documento)
         if (sucessoMatricula) {
@@ -63,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Erro ao matricular aluno", Toast.LENGTH_SHORT).show()
         }
         atualizarListaAlunos()
+        atualizarContadorAlunos()
     }
 
     private fun executarDesmatricula(nome: String, documento: String, posicao: Int) {
@@ -73,6 +88,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Erro ao desmatricular aluno", Toast.LENGTH_SHORT).show()
         }
         atualizarListaAlunos()
+        atualizarContadorAlunos()
     }
 
     private fun atualizarListaAlunos() {
@@ -81,6 +97,11 @@ class MainActivity : AppCompatActivity() {
         //Passamos a lista atualizada de alunos para o adaptador através da sua função
         //atualizarListaAlunos()
         adaptadorListaAlunos?.atualizaAlunosTurma(lista_alunos_turma)
+    }
+
+    private fun atualizarContadorAlunos() {
+        val quantitudade_alunos_turma = turma.getAlunosMatriculados().size
+        tvAlunosMatriculados?.text = getString(R.string.quantidade_alunos_matriculados, quantitudade_alunos_turma)
     }
 
 }

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Playground06</string>
     <string name="desmatricular">Desmatricular</string>
+    <string name="quantidade_alunos_matriculados">Alunos matriculados: %d</string>
 </resources>
