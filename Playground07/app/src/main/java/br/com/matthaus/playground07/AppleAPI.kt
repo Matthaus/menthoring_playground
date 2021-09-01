@@ -8,9 +8,15 @@ import retrofit2.http.Query
 interface AppleAPI {
 
     @GET("/search")
-    fun buscarAlbumsPorPalavraChave(
+    suspend fun buscarAlbumsPorPalavraChave(
         @Query("term") term: String,
         @Query("entity") entity: String
-    ) : Call<ResultadoAlbums>
+    ) : ResultadoAlbums
+    //Quando colocamos suspend na assinatura da função
+    //Estamos dizendo que ela é uma função assíncrona (que pode ser suspendida)
+    //Similar ao async no javascript
+
+    //Como não vamos mais utilizar callback, podemos remover
+    //O tipo Call da resposta
 
 }
